@@ -6,43 +6,61 @@
     <title>Be My Valentine?</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/scratchcard-js@1.5.5/dist/scratchcard.min.js"></script>
     <style>
-        #scratch-card {
+        #scratchpad {
             position: relative;
-            width: 100%;
-            max-width: 400px;
-            aspect-ratio: 1;
+            width: 300px;
+            height: 300px;
             margin: 0 auto;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
-        .scratch-card-container {
-            position: fixed;
-            inset: 0;
+
+        #scratchpad canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+        }
+
+        .scratch-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 50;
-        }
-        .coupon-text {
-            color: white;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
             text-align: center;
         }
     </style>
 </head>
 <body class="bg-gradient-to-br from-rose-900 to-black min-h-screen flex items-center justify-center p-4">
     <!-- Scratch Card Container -->
-    <div id="scratch-container" class="scratch-card-container">
-        <div class="coupon-text">You have a special coupon from Pranay! 🎁<br>Scratch to reveal...</div>
-        <div id="scratch-card"></div>
+    <div id="scratch-container" class="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80 z-50">
+        <div class="text-white text-2xl mb-6 text-center px-4">
+            You have a special coupon from Pranay! 🎁<br>
+            <span class="text-lg">Scratch to reveal...</span>
+        </div>
+        <div id="scratchpad">
+            <div class="scratch-content" id="valentine-content">
+                <div class="text-2xl font-bold text-pink-600">
+                    Will you be my Valentine?
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Main Content (Initially Hidden) -->
-    <div id="main-content" class="hidden">
-        <!-- Main Modal -->
+    <div id="main-content" class="hidden w-full">
         <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
             <!-- Close button -->
             <button id="close-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
@@ -64,90 +82,140 @@
                 </div>
             </div>
 
-            <!-- Success Section (Hidden by default) -->
+            <!-- Success Section -->
             <div id="success-section" class="hidden">
                 <img src="https://api.iconify.design/emojione:kiss-mark.svg" class="w-24 h-24 mx-auto mb-4" alt="Kiss">
                 <h2 class="text-3xl font-bold mb-2">Yay let's go!</h2>
                 <p class="text-2xl text-pink-600 font-semibold">I love you Poplu ❤️</p>
             </div>
         </div>
+    </div>
 
-        <!-- Love Confirmation Modal (Hidden by default) -->
-        <div id="love-confirmation" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
-                <h2 class="text-3xl font-bold text-pink-600 mb-4">Say you love me back ��</h2>
-                <button id="love-confirm-btn" class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
-                    I love you too! ❤️
-                </button>
-            </div>
+    <!-- Love Confirmation Modal -->
+    <div id="love-confirmation" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
+            <h2 class="text-3xl font-bold text-pink-600 mb-4">Say you love me back 🥺</h2>
+            <button id="love-confirm-btn" class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
+                I love you too! ❤️
+            </button>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const scContainer = document.getElementById('scratch-container');
+        document.addEventListener('DOMContentLoaded', function() {
+            const scratchpad = document.getElementById('scratchpad');
+            const scratchContainer = document.getElementById('scratch-container');
             const mainContent = document.getElementById('main-content');
+            
+            // Create scratch canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = scratchpad.offsetWidth;
+            canvas.height = scratchpad.offsetHeight;
+            scratchpad.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Fill scratch layer with pink color
+            ctx.fillStyle = '#FFC0CB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add some decorative pattern
+            ctx.strokeStyle = '#FF69B4';
+            for(let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.arc(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    10,
+                    0,
+                    2 * Math.PI
+                );
+                ctx.stroke();
+            }
 
-            const scratchCard = new ScratchCard('#scratch-card', {
-                scratchType: 'circle',
-                containerWidth: 400,
-                containerHeight: 400,
-                imageForward: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-                imageBackground: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-                percentToFinish: 50,
-                brushSize: 30,
-                onComplete: () => {
-                    // Hide scratch container and show main content with animation
+            let isDrawing = false;
+            let scratchedPixels = 0;
+            const totalPixels = canvas.width * canvas.height;
+
+            function scratch(e) {
+                if (!isDrawing) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Count scratched pixels
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                scratchedPixels = 0;
+                for (let i = 3; i < imageData.data.length; i += 4) {
+                    if (imageData.data[i] === 0) scratchedPixels++;
+                }
+                
+                // If 50% is scratched, reveal the main content
+                if (scratchedPixels > totalPixels * 0.5) {
                     setTimeout(() => {
-                        scContainer.style.opacity = '0';
-                        scContainer.style.transition = 'opacity 0.5s ease-out';
+                        scratchContainer.style.opacity = '0';
+                        scratchContainer.style.transition = 'opacity 0.5s ease-out';
                         setTimeout(() => {
-                            scContainer.style.display = 'none';
+                            scratchContainer.style.display = 'none';
                             mainContent.classList.remove('hidden');
                         }, 500);
                     }, 500);
                 }
-            });
-        });
-
-        const yesBtn = document.getElementById('yes-btn');
-        const noBtn = document.getElementById('no-btn');
-        const questionSection = document.getElementById('question-section');
-        const successSection = document.getElementById('success-section');
-        const closeBtn = document.getElementById('close-btn');
-        const loveConfirmation = document.getElementById('love-confirmation');
-        const loveConfirmBtn = document.getElementById('love-confirm-btn');
-        let hasClickedYes = false;
-
-        yesBtn.addEventListener('click', () => {
-            hasClickedYes = true;
-            questionSection.classList.add('hidden');
-            successSection.classList.remove('hidden');
-            
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-        });
-
-        closeBtn.addEventListener('click', () => {
-            if (hasClickedYes) {
-                loveConfirmation.classList.remove('hidden');
             }
-        });
 
-        loveConfirmBtn.addEventListener('click', () => {
-            loveConfirmation.classList.add('hidden');
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
+            canvas.addEventListener('mousedown', () => isDrawing = true);
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('touchstart', () => isDrawing = true);
+            canvas.addEventListener('touchmove', scratch);
+            canvas.addEventListener('touchend', () => isDrawing = false);
+
+            // Rest of your existing JavaScript for buttons
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const closeBtn = document.getElementById('close-btn');
+            const questionSection = document.getElementById('question-section');
+            const successSection = document.getElementById('success-section');
+            const loveConfirmation = document.getElementById('love-confirmation');
+            const loveConfirmBtn = document.getElementById('love-confirm-btn');
+            let hasClickedYes = false;
+
+            yesBtn.addEventListener('click', () => {
+                hasClickedYes = true;
+                questionSection.classList.add('hidden');
+                successSection.classList.remove('hidden');
+                
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
             });
-        });
 
-        noBtn.addEventListener('click', () => {
-            alert('Invalid option, please try again');
+            closeBtn.addEventListener('click', () => {
+                if (hasClickedYes) {
+                    loveConfirmation.classList.remove('hidden');
+                }
+            });
+
+            loveConfirmBtn.addEventListener('click', () => {
+                loveConfirmation.classList.add('hidden');
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            });
+
+            noBtn.addEventListener('click', () => {
+                alert('Invalid option, please try again');
+            });
         });
     </script>
 </body>
