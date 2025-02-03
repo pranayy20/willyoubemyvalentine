@@ -11,7 +11,7 @@
     <!-- Main Modal -->
     <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
         <!-- Close button -->
-        <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+        <button id="close-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -33,7 +33,18 @@
         <!-- Success Section (Hidden by default) -->
         <div id="success-section" class="hidden">
             <img src="https://api.iconify.design/emojione:kiss-mark.svg" class="w-24 h-24 mx-auto mb-4" alt="Kiss">
-            <h2 class="text-3xl font-bold mb-4">Yay let's go!</h2>
+            <h2 class="text-3xl font-bold mb-2">Yay let's go!</h2>
+            <p class="text-2xl text-pink-600 font-semibold">I love you Poplu ❤️</p>
+        </div>
+    </div>
+
+    <!-- Love Confirmation Modal (Hidden by default) -->
+    <div id="love-confirmation" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
+            <h2 class="text-3xl font-bold text-pink-600 mb-4">Say you love me back ��</h2>
+            <button id="love-confirm-btn" class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
+                I love you too! ❤️
+            </button>
         </div>
     </div>
 
@@ -42,16 +53,33 @@
         const noBtn = document.getElementById('no-btn');
         const questionSection = document.getElementById('question-section');
         const successSection = document.getElementById('success-section');
+        const closeBtn = document.getElementById('close-btn');
+        const loveConfirmation = document.getElementById('love-confirmation');
+        const loveConfirmBtn = document.getElementById('love-confirm-btn');
+        let hasClickedYes = false;
 
         yesBtn.addEventListener('click', () => {
-            // Hide question section
+            hasClickedYes = true;
             questionSection.classList.add('hidden');
-            // Show success section
             successSection.classList.remove('hidden');
             
-            // Trigger confetti
             confetti({
                 particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            if (hasClickedYes) {
+                loveConfirmation.classList.remove('hidden');
+            }
+        });
+
+        loveConfirmBtn.addEventListener('click', () => {
+            loveConfirmation.classList.add('hidden');
+            confetti({
+                particleCount: 150,
                 spread: 70,
                 origin: { y: 0.6 }
             });
