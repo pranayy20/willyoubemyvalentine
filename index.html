@@ -6,49 +6,110 @@
     <title>Be My Valentine?</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scratchcard-js@1.5.5/dist/scratchcard.min.js"></script>
+    <style>
+        #scratch-card {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1;
+            margin: 0 auto;
+        }
+        .scratch-card-container {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 50;
+        }
+        .coupon-text {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-rose-900 to-black min-h-screen flex items-center justify-center p-4">
-    <!-- Main Modal -->
-    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
-        <!-- Close button -->
-        <button id="close-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
+    <!-- Scratch Card Container -->
+    <div id="scratch-container" class="scratch-card-container">
+        <div class="coupon-text">You have a special coupon from Pranay! 🎁<br>Scratch to reveal...</div>
+        <div id="scratch-card"></div>
+    </div>
 
-        <!-- Question Section -->
-        <div id="question-section">
-            <h1 class="text-4xl font-bold mb-8">Will you be my Valentine?</h1>
-            <div class="space-x-4">
-                <button id="yes-btn" class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
-                    Yes
-                </button>
-                <button id="no-btn" class="bg-rose-900 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-rose-800 transition-colors">
-                    No
-                </button>
+    <!-- Main Content (Initially Hidden) -->
+    <div id="main-content" class="hidden">
+        <!-- Main Modal -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
+            <!-- Close button -->
+            <button id="close-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <!-- Question Section -->
+            <div id="question-section">
+                <h1 class="text-4xl font-bold mb-8">Will you be my Valentine?</h1>
+                <div class="space-x-4">
+                    <button id="yes-btn" class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
+                        Yes
+                    </button>
+                    <button id="no-btn" class="bg-rose-900 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-rose-800 transition-colors">
+                        No
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success Section (Hidden by default) -->
+            <div id="success-section" class="hidden">
+                <img src="https://api.iconify.design/emojione:kiss-mark.svg" class="w-24 h-24 mx-auto mb-4" alt="Kiss">
+                <h2 class="text-3xl font-bold mb-2">Yay let's go!</h2>
+                <p class="text-2xl text-pink-600 font-semibold">I love you Poplu ❤️</p>
             </div>
         </div>
 
-        <!-- Success Section (Hidden by default) -->
-        <div id="success-section" class="hidden">
-            <img src="https://api.iconify.design/emojione:kiss-mark.svg" class="w-24 h-24 mx-auto mb-4" alt="Kiss">
-            <h2 class="text-3xl font-bold mb-2">Yay let's go!</h2>
-            <p class="text-2xl text-pink-600 font-semibold">I love you Poplu ❤️</p>
-        </div>
-    </div>
-
-    <!-- Love Confirmation Modal (Hidden by default) -->
-    <div id="love-confirmation" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
-            <h2 class="text-3xl font-bold text-pink-600 mb-4">Say you love me back ��</h2>
-            <button id="love-confirm-btn" class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
-                I love you too! ❤️
-            </button>
+        <!-- Love Confirmation Modal (Hidden by default) -->
+        <div id="love-confirmation" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
+                <h2 class="text-3xl font-bold text-pink-600 mb-4">Say you love me back ��</h2>
+                <button id="love-confirm-btn" class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
+                    I love you too! ❤️
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const scContainer = document.getElementById('scratch-container');
+            const mainContent = document.getElementById('main-content');
+
+            const scratchCard = new ScratchCard('#scratch-card', {
+                scratchType: 'circle',
+                containerWidth: 400,
+                containerHeight: 400,
+                imageForward: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+                imageBackground: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+                percentToFinish: 50,
+                brushSize: 30,
+                onComplete: () => {
+                    // Hide scratch container and show main content with animation
+                    setTimeout(() => {
+                        scContainer.style.opacity = '0';
+                        scContainer.style.transition = 'opacity 0.5s ease-out';
+                        setTimeout(() => {
+                            scContainer.style.display = 'none';
+                            mainContent.classList.remove('hidden');
+                        }, 500);
+                    }, 500);
+                }
+            });
+        });
+
         const yesBtn = document.getElementById('yes-btn');
         const noBtn = document.getElementById('no-btn');
         const questionSection = document.getElementById('question-section');
