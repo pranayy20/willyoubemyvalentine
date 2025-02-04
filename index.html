@@ -47,7 +47,7 @@
     <!-- Scratch Card Container -->
     <div id="scratch-container" class="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80 z-50">
         <div class="text-white text-2xl mb-6 text-center px-4">
-            You have a special coupon from Pranay! 🎁<br>
+            You have a special coupon from Pratik! 🎁<br>
             <span class="text-lg">Scratch to reveal...</span>
         </div>
         <div id="scratchpad">
@@ -86,17 +86,53 @@
             <div id="success-section" class="hidden">
                 <img src="https://api.iconify.design/emojione:kiss-mark.svg" class="w-24 h-24 mx-auto mb-4" alt="Kiss">
                 <h2 class="text-3xl font-bold mb-2">Yay let's go!</h2>
-                <p class="text-2xl text-pink-600 font-semibold">I love you Poplu ❤️</p>
+                <p class="text-2xl text-pink-600 font-semibold">I love you Sachi ❤️</p>
             </div>
         </div>
     </div>
 
-    <!-- Love Confirmation Modal -->
-    <div id="love-confirmation" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <!-- Valentine Plus Modal -->
+    <div id="valentine-plus" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-auto text-center relative">
-            <h2 class="text-3xl font-bold text-pink-600 mb-4">Say you love me back 🥺</h2>
-            <button id="love-confirm-btn" class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
-                I love you too! ❤️
+            <button class="absolute top-4 left-4 text-gray-500 hover:text-gray-700" onclick="document.getElementById('valentine-plus').classList.add('hidden')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </button>
+            <h2 class="text-3xl font-bold mb-6">Try Valentine Plus today!</h2>
+            <ul class="text-left mb-6 space-y-3">
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-pink-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                    </svg>
+                    Unlock the full valentine experience
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-pink-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                    </svg>
+                    10 credits to use the "No" button
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-pink-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                    </svg>
+                    Navigation with no ads
+                </li>
+            </ul>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-black text-white p-4 rounded-xl">
+                    <div class="text-xl font-bold">$999 Annual</div>
+                    <div class="text-gray-400">$84 per month</div>
+                </div>
+                <div class="bg-gray-100 p-4 rounded-xl">
+                    <div class="text-xl font-bold">$99 Monthly</div>
+                    <div class="text-gray-600">First 7 days free!</div>
+                </div>
+            </div>
+            <p class="mb-4 text-gray-600">Or just say Yes...</p>
+            <button onclick="handleValentinePlusYes()" class="w-full bg-pink-500 text-white py-3 rounded-full text-lg font-semibold hover:bg-pink-600 transition-colors">
+                Yes
             </button>
         </div>
     </div>
@@ -214,8 +250,21 @@
             });
 
             noBtn.addEventListener('click', () => {
-                alert('Invalid option, please try again');
+                document.getElementById('valentine-plus').classList.remove('hidden');
             });
+
+            function handleValentinePlusYes() {
+                document.getElementById('valentine-plus').classList.add('hidden');
+                hasClickedYes = true;
+                questionSection.classList.add('hidden');
+                successSection.classList.remove('hidden');
+                
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
         });
     </script>
 </body>
