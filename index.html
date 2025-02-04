@@ -220,6 +220,7 @@
             const successSection = document.getElementById('success-section');
             const loveConfirmation = document.getElementById('love-confirmation');
             const loveConfirmBtn = document.getElementById('love-confirm-btn');
+            const valentinePlus = document.getElementById('valentine-plus');
             let hasClickedYes = false;
 
             yesBtn.addEventListener('click', () => {
@@ -232,6 +233,10 @@
                     spread: 70,
                     origin: { y: 0.6 }
                 });
+            });
+
+            noBtn.addEventListener('click', () => {
+                valentinePlus.classList.remove('hidden');
             });
 
             closeBtn.addEventListener('click', () => {
@@ -249,12 +254,9 @@
                 });
             });
 
-            noBtn.addEventListener('click', () => {
-                document.getElementById('valentine-plus').classList.remove('hidden');
-            });
-
-            function handleValentinePlusYes() {
-                document.getElementById('valentine-plus').classList.add('hidden');
+            // Make handleValentinePlusYes available globally
+            window.handleValentinePlusYes = function() {
+                valentinePlus.classList.add('hidden');
                 hasClickedYes = true;
                 questionSection.classList.add('hidden');
                 successSection.classList.remove('hidden');
@@ -264,7 +266,7 @@
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-            }
+            };
         });
     </script>
 </body>
